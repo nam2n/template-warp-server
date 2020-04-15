@@ -7,6 +7,6 @@ mod healthz;
 pub fn all(db: mongodb::Database) -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
     let db = Arc::new(db);
     warp::get()
-        .and(healthz::ping(db.clone()))
+        .and(healthz::ping(db))
         .with(warp::log("template-warp-server"))
 }
