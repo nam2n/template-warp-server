@@ -1,0 +1,33 @@
+version: "3.4"
+services:
+  web:
+    build: .
+    ports:
+      - "1337:1337"
+    environment:
+      APP_ENV: dev
+      WEBSERVER_PORT: 1337
+      DATABASE_URL:  mongodb://mongo
+      DATABASE_NAME: mydatabase
+      RUST_LOG: info,warp=info
+    links:
+      - "mongo:mongo"
+    command: /bin/bash -c "/home/app/scripts/wait-for.sh -t 300 mongo:27017 && /home/app/server"
+  mongo:
+    image: mongo
+    volumes:
+      - "/usr/local/var/mongodb:/data/db"
+    ports:
+      - "27018:27017"
+  test:
+    build:
+      context: .
+      target: test
+    environment:
+      APP_ENV: test
+      WEBSERVER_PORT: 1337
+      DATABASE_URL:  mongodb://mongo
+      DATABASE_NAME: mydatabase
+    links:
+      - "mongo:mongo"
+    command: /bin/bash -c "/home/app/scripts/wait-for.sh -t 300 mongo:27017 && cargo test"
