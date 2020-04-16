@@ -1,4 +1,4 @@
-use super::ping_db;
+use super::{ping, ping_db};
 use bson::doc;
 use mongodb::options::SelectionCriteria;
 use std::sync::Arc;
@@ -60,4 +60,43 @@ fn failure_on_unknown_db_response() {
     let actual = ping_db(mock);
 
     assert!(actual.is_err());
+}
+
+#[tokio::test]
+async fn test_healthz_path() {
+    let db = crate::db::connect::<&str>("mongodb://localhost", "mydatabase", &None).unwrap();
+
+    let filter = ping(Arc::new(db));
+
+    assert!(
+        warp::test::request()
+            .path("/healthz")
+            .matches(&filter)
+            .await
+    );
+
+    assert!(!warp::test::request().path("/health").matches(&filter).await);
+
+    assert!(!warp::test::request().path("/").matches(&filter).await);
+
+    assert!(
+        !warp::test::request()
+            .path("/healthz/abc")
+            .matches(&filter)
+            .await
+    );
+
+    assert!(
+        !warp::test::request()
+            .path("/healthz/123")
+            .matches(&filter)
+            .await
+    );
+
+    assert!(
+        !warp::test::request()
+            .path("/healthz/ab1")
+            .matches(&filter)
+            .await
+    );
 }
