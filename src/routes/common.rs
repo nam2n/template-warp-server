@@ -1,6 +1,33 @@
+use bson::Document;
+use mongodb::error::Error;
+use mongodb::options::SelectionCriteria;
 use std::convert::Infallible;
 use std::sync::Arc;
 use warp::Filter;
+
+#[cfg(test)]
+use mockall::*;
+
+#[cfg_attr(test, automock)]
+pub(crate) trait DbInterface {
+    fn run_command(
+        &self,
+        command: Document,
+        selection_criteria: Option<SelectionCriteria>,
+    ) -> Result<Document, Error>;
+}
+
+pub struct DbInterfaceImpl<'a>(pub &'a mongodb::Database);
+
+impl<'a> DbInterface for DbInterfaceImpl<'a> {
+    fn run_command(
+        &self,
+        command: Document,
+        selection_criteria: Option<SelectionCriteria>,
+    ) -> Result<Document, Error> {
+        self.0.run_command(command, selection_criteria)
+    }
+}
 
 pub fn with_db(
     db: Arc<mongodb::Database>,
