@@ -4,25 +4,25 @@ This repository contains template code for web-server written in Rust.
 It uses [warp](https://docs.rs/warp/) for implementing the web-server and [mongodb](https://docs.rs/mongodb/) as the datastore.  
 
 ## Build and Run
-To run the server, simply run the command:
+To run the server, simply execute the command:
 ```
 cargo run
 ```
 
-Alternatively, to only build the code use the following command:
+Alternatively, to build the code use the following command:
 ```
 cargo build
 ```
 
-(Please note that both the above command build `debug/unoptimized` binary, please check the build in `Dockerfile` for more details)
+(Please note that both the above commands build a `debug/unoptimized` binary, please check the build in `Dockerfile` for more `release` binary)
 
-The project uses clippy for linting and rustfmt for formatting. Github actions are setup to run these for each commit and PR.
-To format the code using rustfmt:
+The project uses `clippy` for linting and `rustfmt` for formatting. Github actions are setup to run these for each commit and PR.
+To format the code using `rustfmt`:
 ```
 cargo fmt
 ```
 
-To run clippy:
+To run `clippy`:
 ```
 cargo clippy --all-targets --all-features -- -D warnings
 ```
@@ -34,12 +34,13 @@ cargo test
 
 ## Docker
 The template also contains the `Dockerfile` with 2-stage build for creating smallest possible (non-alphine) docker image.  
-The multi-stage build also ensure that subsequent build after the first build are faster. The first build compiles all the dependencies which get cached as image layer. Subsequent builds can then skip the dependency compilation by using the image cache.
+The multi-stage build also ensures that subsequent builds (after the first one) are faster. The first build compiles all the dependencies which get cached as image layer. Subsequent builds can then skip the dependency compilation by using the image cache. A full build will only run if new dependencies are added or if image cache is pruned.
 
-`docker-compose` can also be used to run the server in a docker container environment
+`docker-compose` can also be used to run the server in a container environment
 ```
 docker-compose up web
 ```
+This will build the project, run mongo database, and run then web-server.
 
 To stop all the containers started by `docker-compose`, use the following command:
 ```
@@ -48,7 +49,7 @@ docker-compose down -v
 
 ## Tests
 The project contains unit tests in files with names like `*_test.rs`.  
-The code uses [mockall](https://docs.rs/mockall/) for mocking database connectivity. The test imports and dependencies are only present during `cfg(test)` and are not present in the binary at all.
+The code uses [mockall](https://docs.rs/mockall/) for mocking database connectivity. The test imports are guarded by `cfg_attr(test)`, this ensures that these are not present in runnable binary. All dependencies required for only executing tests are added as `dev-dependencies`.
 
 ## Notes
 1. This repository does NOT show the code organisation for large rust projects.
