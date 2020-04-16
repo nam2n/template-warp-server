@@ -49,3 +49,9 @@ docker-compose down -v
 ## Tests
 The project contains unit tests in files with names like `*_test.rs`.  
 The code uses [mockall](https://docs.rs/mockall/) for mocking database connectivity. The test imports and dependencies are only present during `cfg(test)` and are not present in the binary at all.
+
+## Notes
+1. This repository does NOT show the code organisation for large rust projects.
+2. As number of endpoints in the server increase, the compilation will become slower. This is because `warp` does a lot of code-generation at compile time for faster runtime. `BoxedFilter` can be used if faster compile times are necessary.
+3. The docker image build is optimized for performance while trading for higher binary size. This can be changed by adjusting `.cargo` configuration.
+4. Docker image contains release binary with `debuginfo` for deeper error/crash reporting. If this is not required, then remove 'debug = true` from `Cargo.toml`. This will reduce the binary size significantly.   
