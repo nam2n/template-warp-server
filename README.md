@@ -51,6 +51,10 @@ docker-compose down -v
 The project contains unit tests in files with names like `*_test.rs`.  
 The code uses [mockall](https://docs.rs/mockall/) for mocking database connectivity. The test imports are guarded by `cfg_attr(test)`, this ensures that these are not present in runnable binary. All dependencies required for only executing tests are added as `dev-dependencies`.
 
+## Continous Integration
+The projects contains the CI pipeline defined as github workflow.
+The pipeline is defined at `/github/workflows/rust.yml`.
+
 ## Notes
 1. This repository does NOT show the code organisation for large rust projects.
 2. As number of endpoints in the server increase, the compilation will become slower. This is because `warp` does a lot of code-generation at compile time for faster runtime. `BoxedFilter` can be used if faster compile times are necessary.
